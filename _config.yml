@@ -1,0 +1,8 @@
+title: Sam1695 Robotics
+description: Tutorials and videos for newcomers to the lab
+theme: jekyll-theme-minimal
+show_downloads: false
+
+# This makes navigation links appear at the top of the site
+header_pages:
+  - about.md
