@@ -1,0 +1,29 @@
+[
+  {
+    "id": "intro-to-ros",
+    "title": "Getting Started with ROS 2 (Robot Operating System)",
+    "excerpt": "A beginner's guide to nodes, topics, services, and building your first ROS workspace. Learn how modern robotic software modules communicate.",
+    "date": "2026-07-10",
+    "author": "Dr. Sarah Miller",
+    "tags": ["Software", "ROS", "Beginner"],
+    "file": "intro-to-ros.md"
+  },
+  {
+    "id": "robot-kinematics",
+    "title": "Robot Kinematics: Forward & Inverse Solutions",
+    "excerpt": "Dive into the mathematical foundation of robotic arm movements. Understand Denavit-Hartenberg (DH) parameters and coordinate transformations.",
+    "date": "2026-07-05",
+    "author": "Marcus Thorne, PhD Candidate",
+    "tags": ["Math", "Control Systems", "Hardware"],
+    "file": "robot-kinematics.md"
+  },
+  {
+    "id": "cv-opencv",
+    "title": "Computer Vision in Robotics: Object Tracking",
+    "excerpt": "How to guide a robot arm using a camera feed. We build an end-to-end HSV color tracker and connect coordinate spaces using OpenCV.",
+    "date": "2026-06-28",
+    "author": "Elena Rostova",
+    "tags": ["Software", "Computer Vision", "AI"],
+    "file": "cv-opencv.md"
+  }
+]

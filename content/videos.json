@@ -1,0 +1,32 @@
+[
+  {
+    "id": "ros-workspace-setup",
+    "title": "Configuring ROS 2 Colcon Workspace from Scratch",
+    "description": "In this video walkthrough, we show you how to properly initialize a ROS 2 workspace, configure packages, and write your first publisher/subscriber in C++ and Python.",
+    "duration": "14:22",
+    "youtubeId": "dQw4w9WgXcQ",
+    "date": "2026-07-09",
+    "category": "Software",
+    "speaker": "Dr. Sarah Miller"
+  },
+  {
+    "id": "robot-arm-calibration",
+    "title": "6-DOF Robotic Arm Inverse Kinematics & Calibration Demo",
+    "description": "Watch our custom 3D-printed 6-DOF arm perform high-precision pick and place operations. We explain our calibration method to resolve mechanical offsets.",
+    "duration": "08:45",
+    "youtubeId": "dQw4w9WgXcQ",
+    "date": "2026-07-03",
+    "category": "Hardware",
+    "speaker": "Marcus Thorne"
+  },
+  {
+    "id": "stereo-vision-mapping",
+    "title": "Real-time 3D Point Cloud Generation via Stereo Vision",
+    "description": "A demonstration of our autonomous rover platform navigating an obstacle course using stereo cameras to compute depth maps and generate occupancy grids in real time.",
+    "duration": "11:05",
+    "youtubeId": "dQw4w9WgXcQ",
+    "date": "2026-06-25",
+    "category": "Computer Vision",
+    "speaker": "Elena Rostova"
+  }
+]
