@@ -32,7 +32,7 @@ function Navbar({ currentView, setView }) {
     <nav className="navbar">
       <div className="nav-brand" style={{ cursor: 'pointer' }} onClick={() => setView('home')}>
         <i className="fa-solid fa-microchip"></i>
-        <span>NEXUS LABS</span>
+        <span>Autonomous Systems Lab</span>
       </div>
       <button className="nav-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
         <i className={mobileMenuOpen ? "fa-solid fa-xmark" : "fa-solid fa-bars"}></i>
@@ -581,7 +581,7 @@ function TeamView() {
   return (
     <div>
       <section className="about-section">
-        <h2>About Nexus Robotics Lab</h2>
+        <h2>About the Autonomous Systems Lab</h2>
         <p>
           We are an academic research facility dedicated to developing robust, open-source software and mechanical configurations for robotic systems. Our workspace bridges the gap between raw mathematical control architectures and production-ready implementations in the real world.
         </p>
@@ -704,7 +704,7 @@ function App() {
         {renderContent()}
       </main>
       <footer className="footer">
-        &copy; {new Date().getFullYear()} Nexus Robotics Laboratory. Built with <i className="fa-solid fa-heart" style={{ display: 'inline', color: 'var(--primary)' }}></i> using React CDN.
+        &copy; {new Date().getFullYear()} sam1695.dev.robotics Built with <i className="fa-solid fa-heart" style={{ display: 'inline', color: 'var(--primary)' }}></i> using React CDN.
       </footer>
     </div>
   );
