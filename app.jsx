@@ -309,14 +309,24 @@ function TutorialReaderView({ tutorialId, setView, tutorials }) {
   const [error, setError] = React.useState(null);
 
   const tutorialMeta = tutorials.find(t => t.id === tutorialId);
+  const manifestReady = tutorials.length > 0;
 
   React.useEffect(() => {
     if (!tutorialId) return;
+
+    if (manifestReady && !tutorialMeta) {
+      setLoading(false);
+      setError("We couldn't locate this tutorial's record.");
+      return;
+    }
+
+    if (!tutorialMeta) return;
+
     setLoading(true);
     setError(null);
 
-    // Fetch the markdown file from content/tutorials/
-    fetch(`./content/tutorials/${tutorialId}.md`)
+    const filePath = tutorialMeta.file || `${tutorialId}.md`;
+    fetch(`./content/tutorials/${filePath}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Failed to load the tutorial file. Please check if the file exists.');
@@ -361,7 +371,7 @@ function TutorialReaderView({ tutorialId, setView, tutorials }) {
         setError(err.message);
         setLoading(false);
       });
-  }, [tutorialId]);
+  }, [tutorialId, tutorialMeta, manifestReady]);
 
   // Execute syntax highlighting whenever HTML output is injected into DOM
   React.useEffect(() => {
@@ -370,7 +380,7 @@ function TutorialReaderView({ tutorialId, setView, tutorials }) {
     }
   }, [htmlContent, loading]);
 
-  if (loading) {
+  if (loading || (tutorialId && !manifestReady)) {
     return (
       <div style={{ textAlign: 'center', padding: '5rem', color: 'var(--text-secondary)' }}>
         <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '3rem', display: 'block', margin: '0 auto 1.5rem auto', color: 'var(--primary)' }}></i>
@@ -652,41 +662,6 @@ function TeamView() {
 /* ==========================================================================
    Robot Platform Data
    ========================================================================== */
-const g1Resources = [
-  {
-    id: 'g1-overview',
-    title: 'Unitree G1 — Platform Overview',
-    excerpt: 'Introduction to the Unitree G1 humanoid robot: hardware specs, joint layout, and getting started with the SDK.',
-    tags: ['Hardware', 'SDK'],
-    author: 'Lab Team',
-    date: 'Jan 2025'
-  },
-  {
-    id: 'g1-locomotion',
-    title: 'G1 Locomotion & Gait Control',
-    excerpt: 'Deep-dive into the G1 locomotion stack — configuring gaits, tuning PD gains, and deploying custom walking policies.',
-    tags: ['Control', 'RL'],
-    author: 'Marcus Thorne',
-    date: 'Feb 2025'
-  },
-  {
-    id: 'g1-ros2',
-    title: 'ROS 2 Integration with Unitree G1',
-    excerpt: 'Bridging Unitree SDK topics into a ROS 2 workspace, setting up the URDF model, and running MoveIt 2 motion planning.',
-    tags: ['ROS 2', 'SDK'],
-    author: 'Elena Rostova',
-    date: 'Mar 2025'
-  },
-  {
-    id: 'g1-vision',
-    title: 'Onboard Vision Pipeline for G1',
-    excerpt: 'Configuring the G1 head cameras with OpenCV and running real-time object detection for manipulation tasks.',
-    tags: ['Vision', 'Hardware'],
-    author: 'Alex Kim',
-    date: 'Apr 2025'
-  }
-];
-
 const spotResources = [
   {
     id: 'spot-overview',
@@ -725,7 +700,7 @@ const spotResources = [
 /* ==========================================================================
    Robot Platform View Component
    ========================================================================== */
-function RobotView({ robot, resources }) {
+function RobotView({ robot, resources, setView }) {
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedTag, setSelectedTag] = React.useState('All');
 
@@ -801,7 +776,15 @@ function RobotView({ robot, resources }) {
                   </span>
                 ))}
               </div>
-              <h3 className="card-title">{resource.title}</h3>
+              <h3 className="card-title">
+                {resource.id ? (
+                  <a href={`#tutorials/${resource.id}`} onClick={() => setView(`tutorials/${resource.id}`)}>
+                    {resource.title}
+                  </a>
+                ) : (
+                  resource.title
+                )}
+              </h3>
               <p className="card-excerpt">{resource.excerpt}</p>
               <div className="card-footer">
                 <span className="card-author">
@@ -885,11 +868,12 @@ function App() {
     }
     
     if (view === 'robots/g1') {
-      return <RobotView robot="g1" resources={g1Resources} />;
+      const g1Resources = tutorials.filter(t => t.tags.includes('G1'));
+      return <RobotView robot="g1" resources={g1Resources} setView={navigateTo} />;
     }
 
     if (view === 'robots/spot') {
-      return <RobotView robot="spot" resources={spotResources} />;
+      return <RobotView robot="spot" resources={spotResources} setView={navigateTo} />;
     }
 
     if (view === 'team') {
