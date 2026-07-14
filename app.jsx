@@ -338,11 +338,22 @@ function TutorialReaderView({ tutorialId, setView, tutorials }) {
         
         // Custom marked renderer to inject custom IDs for links/anchors to support scrolling
         const renderer = new marked.Renderer();
-        renderer.heading = (text, level) => {
+        renderer.heading = function (textOrToken, level) {
+          let text;
+          let depth;
+
+          if (typeof textOrToken === 'object' && textOrToken !== null && textOrToken.tokens) {
+            text = this.parser.parseInline(textOrToken.tokens);
+            depth = textOrToken.depth;
+          } else {
+            text = textOrToken;
+            depth = level;
+          }
+
           const id = text.toLowerCase()
             .replace(/[^\w\s-]/g, '')
             .replace(/\s+/g, '-');
-          return `<h${level} id="${id}">${text}</h${level}>`;
+          return `<h${depth} id="${id}">${text}</h${depth}>\n`;
         };
 
         // Parse markdown text using marked.js CDN compiler
