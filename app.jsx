@@ -20,18 +20,19 @@ const scrollToElement = (id) => {
    ========================================================================== */
 function Navbar({ currentView, setView }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [robotsOpen, setRobotsOpen] = React.useState(false);
 
   const getLinkClass = (viewName) => {
-    if (viewName === 'tutorials' && currentView.startsWith('tutorials')) {
-      return 'active';
-    }
+    if (viewName === 'tutorials' && currentView.startsWith('tutorials')) return 'active';
     return currentView === viewName ? 'active' : '';
   };
+
+  const isRobotsActive = currentView === 'robots/g1' || currentView === 'robots/spot';
 
   return (
     <nav className="navbar">
       <div className="nav-brand" style={{ cursor: 'pointer' }} onClick={() => setView('home')}>
-        <i className="fa-solid fa-microchip"></i>
+        <img src="lab_logo.jpg" alt="Autonomous Systems Lab Logo" className="nav-logo" />
         <span>Autonomous Systems Lab</span>
       </div>
       <button className="nav-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -40,6 +41,31 @@ function Navbar({ currentView, setView }) {
       <ul className={`nav-links ${mobileMenuOpen ? 'mobile-open' : ''}`} style={mobileMenuOpen ? { display: 'flex', flexDirection: 'column', position: 'absolute', top: '70px', right: '10px', background: 'var(--bg-dark)', border: '1px solid var(--border-color)', padding: '1rem', borderRadius: '8px', gap: '0.75rem', zIndex: 101 } : {}}>
         <li>
           <a href="#home" className={getLinkClass('home')} onClick={() => setMobileMenuOpen(false)}>Home</a>
+        </li>
+        <li
+          className="nav-dropdown-parent"
+          onMouseEnter={() => setRobotsOpen(true)}
+          onMouseLeave={() => setRobotsOpen(false)}
+        >
+          <span className={`nav-dropdown-trigger ${isRobotsActive ? 'active' : ''}`}>
+            Robots <i className={`fa-solid fa-chevron-down nav-chevron ${robotsOpen ? 'open' : ''}`}></i>
+          </span>
+          {robotsOpen && (
+            <ul className="nav-dropdown-menu">
+              <li>
+                <a href="#robots/g1" className={currentView === 'robots/g1' ? 'active' : ''}
+                  onClick={() => { setMobileMenuOpen(false); setRobotsOpen(false); }}>
+                  <i className="fa-solid fa-person-walking" style={{ marginRight: '0.4rem' }}></i>Unitree G1
+                </a>
+              </li>
+              <li>
+                <a href="#robots/spot" className={currentView === 'robots/spot' ? 'active' : ''}
+                  onClick={() => { setMobileMenuOpen(false); setRobotsOpen(false); }}>
+                  <i className="fa-solid fa-dog" style={{ marginRight: '0.4rem' }}></i>SPOT
+                </a>
+              </li>
+            </ul>
+          )}
         </li>
         <li>
           <a href="#tutorials" className={getLinkClass('tutorials')} onClick={() => setMobileMenuOpen(false)}>Tutorials</a>
@@ -624,6 +650,180 @@ function TeamView() {
 }
 
 /* ==========================================================================
+   Robot Platform Data
+   ========================================================================== */
+const g1Resources = [
+  {
+    id: 'g1-overview',
+    title: 'Unitree G1 — Platform Overview',
+    excerpt: 'Introduction to the Unitree G1 humanoid robot: hardware specs, joint layout, and getting started with the SDK.',
+    tags: ['Hardware', 'SDK'],
+    author: 'Lab Team',
+    date: 'Jan 2025'
+  },
+  {
+    id: 'g1-locomotion',
+    title: 'G1 Locomotion & Gait Control',
+    excerpt: 'Deep-dive into the G1 locomotion stack — configuring gaits, tuning PD gains, and deploying custom walking policies.',
+    tags: ['Control', 'RL'],
+    author: 'Marcus Thorne',
+    date: 'Feb 2025'
+  },
+  {
+    id: 'g1-ros2',
+    title: 'ROS 2 Integration with Unitree G1',
+    excerpt: 'Bridging Unitree SDK topics into a ROS 2 workspace, setting up the URDF model, and running MoveIt 2 motion planning.',
+    tags: ['ROS 2', 'SDK'],
+    author: 'Elena Rostova',
+    date: 'Mar 2025'
+  },
+  {
+    id: 'g1-vision',
+    title: 'Onboard Vision Pipeline for G1',
+    excerpt: 'Configuring the G1 head cameras with OpenCV and running real-time object detection for manipulation tasks.',
+    tags: ['Vision', 'Hardware'],
+    author: 'Alex Kim',
+    date: 'Apr 2025'
+  }
+];
+
+const spotResources = [
+  {
+    id: 'spot-overview',
+    title: 'Boston Dynamics SPOT — Platform Overview',
+    excerpt: 'Introduction to SPOT: hardware capabilities, Spot SDK structure, and first steps for lab researchers.',
+    tags: ['Hardware', 'SDK'],
+    author: 'Lab Team',
+    date: 'Jan 2025'
+  },
+  {
+    id: 'spot-autonomy',
+    title: 'Autonomous Navigation with SPOT',
+    excerpt: 'Using GraphNav and the autowalk service to map environments, record missions, and replay autonomous patrols.',
+    tags: ['Navigation', 'SDK'],
+    author: 'Dr. Sarah Miller',
+    date: 'Feb 2025'
+  },
+  {
+    id: 'spot-arm',
+    title: 'SPOT Arm Manipulation',
+    excerpt: 'Controlling the SPOT Arm via the Spot SDK — inverse kinematics, grasping objects, and arm-camera visual feedback.',
+    tags: ['Control', 'Vision'],
+    author: 'Marcus Thorne',
+    date: 'Mar 2025'
+  },
+  {
+    id: 'spot-ros2',
+    title: 'ROS 2 Driver for Boston Dynamics SPOT',
+    excerpt: 'Setting up the open-source spot_ros2 driver, configuring the URDF, and publishing sensor data to ROS 2 topics.',
+    tags: ['ROS 2', 'Hardware'],
+    author: 'Elena Rostova',
+    date: 'Apr 2025'
+  }
+];
+
+/* ==========================================================================
+   Robot Platform View Component
+   ========================================================================== */
+function RobotView({ robot, resources }) {
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [selectedTag, setSelectedTag] = React.useState('All');
+
+  const allTags = React.useMemo(() => {
+    const s = new Set(['All']);
+    resources.forEach(r => r.tags.forEach(t => s.add(t)));
+    return Array.from(s);
+  }, [resources]);
+
+  const filtered = React.useMemo(() => {
+    return resources.filter(r => {
+      const matchSearch = r.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          r.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchTag = selectedTag === 'All' || r.tags.includes(selectedTag);
+      return matchSearch && matchTag;
+    });
+  }, [resources, searchTerm, selectedTag]);
+
+  const isG1 = robot === 'g1';
+  const title = isG1 ? 'Unitree G1' : 'Boston Dynamics SPOT';
+  const icon = isG1 ? 'fa-solid fa-person-walking' : 'fa-solid fa-dog';
+  const subtitle = isG1
+    ? 'Resources, tutorials, and guides for the Unitree G1 humanoid robot platform.'
+    : 'Resources, tutorials, and guides for the Boston Dynamics SPOT quadruped robot platform.';
+
+  return (
+    <div>
+      <div className="section-header">
+        <h2 className="section-title">
+          <i className={icon} style={{ marginRight: '0.6rem', color: 'var(--primary)' }}></i>
+          {title}
+        </h2>
+      </div>
+      <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem', marginTop: '-0.5rem' }}>{subtitle}</p>
+
+      <div className="controls-bar">
+        <div className="search-wrapper">
+          <i className="fa-solid fa-magnifying-glass search-icon"></i>
+          <input
+            type="text"
+            className="search-input"
+            placeholder={`Search ${title} resources...`}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="tags-filter">
+          {allTags.map(tag => (
+            <button
+              key={tag}
+              className={`filter-btn ${selectedTag === tag ? 'active' : ''}`}
+              onClick={() => setSelectedTag(tag)}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="card-grid" style={{ minHeight: '300px' }}>
+        {filtered.map(resource => (
+          <div key={resource.id} className="card">
+            <div className="card-content">
+              <div className="card-tag-list">
+                {resource.tags.map(tag => (
+                  <span
+                    key={tag}
+                    className="tag primary"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => setSelectedTag(tag)}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <h3 className="card-title">{resource.title}</h3>
+              <p className="card-excerpt">{resource.excerpt}</p>
+              <div className="card-footer">
+                <span className="card-author">
+                  <i className="fa-solid fa-user" style={{ marginRight: '4px' }}></i> {resource.author}
+                </span>
+                <span>{resource.date}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: 'var(--text-secondary)' }}>
+            <i className="fa-solid fa-circle-xmark" style={{ fontSize: '2.5rem', display: 'block', marginBottom: '1rem', color: 'var(--text-muted)' }}></i>
+            No resources found matching your criteria.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ==========================================================================
    Main Application Root
    ========================================================================== */
 function App() {
@@ -684,6 +884,14 @@ function App() {
       return <VideosView videos={videos} />;
     }
     
+    if (view === 'robots/g1') {
+      return <RobotView robot="g1" resources={g1Resources} />;
+    }
+
+    if (view === 'robots/spot') {
+      return <RobotView robot="spot" resources={spotResources} />;
+    }
+
     if (view === 'team') {
       return <TeamView />;
     }
